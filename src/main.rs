@@ -4,6 +4,7 @@ use sha2::{Digest, Sha256};
 
 // TODO: Consider converting to use Bytes crate instead of u8 arrays for
 // more efficient memory usage
+/// Represents a single block within the blockchain
 #[derive(Debug)]
 struct Block {
     pub timestamp: SystemTime,
@@ -15,7 +16,7 @@ struct Block {
 impl Block {
     pub fn new(data: String, previous_hash: [u8; 32]) -> Self {
         let timestamp = SystemTime::now();
-        let hash = Block::_compute_hash(&data, &previous_hash, &timestamp);
+        let hash = Block::compute_hash_static(&data, &previous_hash, &timestamp);
 
         Self {
             timestamp,
@@ -26,10 +27,14 @@ impl Block {
     }
 
     pub fn compute_hash(&self) -> [u8; 32] {
-        Block::_compute_hash(&self.data, &self.previous_hash, &self.timestamp)
+        Block::compute_hash_static(&self.data, &self.previous_hash, &self.timestamp)
     }
 
-    fn _compute_hash(data: &str, previous_hash: &[u8; 32], timestamp: &SystemTime) -> [u8; 32] {
+    fn compute_hash_static(
+        data: &str,
+        previous_hash: &[u8; 32],
+        timestamp: &SystemTime,
+    ) -> [u8; 32] {
         let mut hasher = Sha256::new();
         hasher.update(previous_hash);
         hasher.update(data);
